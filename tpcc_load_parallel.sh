@@ -20,7 +20,6 @@ set -e
 $MYSQL -u $USER -p$PASS -e "DROP DATABASE IF EXISTS $DATABASE"
 $MYSQL -u $USER -p$PASS -e "CREATE DATABASE $DATABASE"
 $MYSQL -u $USER -p$PASS $DATABASE < $TABLESQL
-$MYSQL -u $USER -p$PASS $DATABASE < $CONSTRAINTSQL
 
 echo 'Loading item ...'
 $TPCCLOAD $SERVER $DATABASE $USER $PASS $WAREHOUSE 1 1 $WAREHOUSE > /dev/null
@@ -73,6 +72,7 @@ for PID in ${PIDLIST[@]}; do
 done
 
 if [ $STATUS -eq 0 ]; then
+    $MYSQL -u $USER -p$PASS $DATABASE < $CONSTRAINTSQL
     echo 'Completed.'
 fi
 
