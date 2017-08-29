@@ -22,7 +22,7 @@ $MYSQL -u $USER -p$PASS -e "CREATE DATABASE $DATABASE"
 $MYSQL -u $USER -p$PASS $DATABASE < $TABLESQL
 
 echo 'Loading item ...'
-$TPCCLOAD $SERVER $DATABASE $USER $PASS $WAREHOUSE 1 1 $WAREHOUSE > /dev/null
+$TPCCLOAD -h $SERVER -d $DATABASE -u $USER -p $PASS -w $WAREHOUSE -l 1 -m 1 -n $WAREHOUSE > /dev/null
 
 set +e
 STATUS=0
@@ -35,13 +35,13 @@ for ((WID = 1; WID <= WAREHOUSE; WID++)); do
         set -e
         
         # warehouse, stock, district
-        $TPCCLOAD $SERVER $DATABASE $USER $PASS $WAREHOUSE 2 $WID $WID > /dev/null
+        $TPCCLOAD -h $SERVER -d $DATABASE -u $USER -p "$PASS" -w $WAREHOUSE -l 2 -m $WID -n $WID > /dev/null
         
         # customer, history
-        $TPCCLOAD $SERVER $DATABASE $USER $PASS $WAREHOUSE 3 $WID $WID > /dev/null
+        $TPCCLOAD -h $SERVER -d $DATABASE -u $USER -p $PASS -w $WAREHOUSE -l 3 -m $WID -n $WID > /dev/null
         
         # orders, new_orders, order_line
-        $TPCCLOAD $SERVER $DATABASE $USER $PASS $WAREHOUSE 4 $WID $WID > /dev/null
+        $TPCCLOAD -h $SERVER -d $DATABASE -u $USER -p $PASS -w $WAREHOUSE -l 4 -m $WID -n $WID > /dev/null
     ) &
     
     PIDLIST=(${PIDLIST[@]} $!)
